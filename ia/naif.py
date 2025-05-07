@@ -11,15 +11,20 @@ class Naif:
 
     def get_move(self, board):
         """
-        Retourne un mouvement, en priorisant les prises dans la rangée devant
+        Retourne un mouvement, en mangeant systématiquement si c'est possible
         """
         valid_moves = self.get_all_valid_moves(board)
         if not valid_moves:
             return None
-        captures = [m for m in valid_moves if (len(m) == 5)]
-        simple_moves = [m for m in valid_moves if (len(m) == 4)]
+            
+        # Séparer les captures des mouvements simples
+        captures = [move for move in valid_moves if len(move) == 5]
+        simple_moves = [move for move in valid_moves if len(move) == 4]
+        
+        # Si des captures sont disponibles, en choisir une aléatoirement
         if captures:
             return random.choice(captures)
+        # Sinon, choisir un mouvement simple aléatoire
         return random.choice(simple_moves)
 
     def get_rafle_move(self, piece, board, next_captures):
@@ -90,4 +95,4 @@ class Naif:
                             if (board.board[middle_row][middle_col] != 0 and 
                                 board.board[middle_row][middle_col].color != piece.color):
                                 captures.append((piece.row, piece.col, jump_row, jump_col, (middle_row, middle_col)))
-        return captures if captures else moves 
+        return moves + captures  # Retourne tous les mouvements possibles 

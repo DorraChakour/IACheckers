@@ -2,7 +2,7 @@ import pygame
 import time
 from board import Board
 from constants import WIDTH, HEIGHT, BLACK, WHITE, SQUARE_SIZE, ROWS, COLS, DARK
-from ia import Naif
+from ia import Minimax
 
 pygame.init()
 
@@ -52,7 +52,9 @@ def get_valid_moves(board, piece, only_captures=False):
                         if (board.board[middle_row][middle_col] != 0 and 
                             board.board[middle_row][middle_col].color != piece.color):
                             captures.append((piece.row, piece.col, jump_row, jump_col, (middle_row, middle_col)))
-    return captures if captures else moves
+    if only_captures:
+        return captures
+    return moves + captures  # Retourne tous les mouvements possibles
 
 def promote_if_needed(piece):
     if piece.color == WHITE and piece.row == ROWS - 1:
@@ -104,7 +106,7 @@ def main():
     run = True
     clock = pygame.time.Clock()
     board = Board()
-    ia = Naif(BLACK)
+    ia = Minimax(BLACK, 3)
     player_turn = True
     selected_piece = None
     valid_moves = []
@@ -132,23 +134,6 @@ def main():
                         board.board[captured[0]][captured[1]] = 0
                 animate_move(board, piece, [(end_row, end_col)])
                 promote_if_needed(piece)
-                # Rafle IA : tant qu'il y a une prise possible avec la même pièce, continuer
-                while True:
-                    next_captures = get_valid_moves(board, piece, only_captures=True)
-                    if next_captures:
-                        move = ia.get_rafle_move(piece, board, next_captures)
-                        if move:
-                            start_row, start_col, end_row, end_col, captured = move
-                            board.board[end_row][end_col] = piece
-                            board.board[start_row][start_col] = 0
-                            if isinstance(captured, tuple):
-                                board.board[captured[0]][captured[1]] = 0
-                            animate_move(board, piece, [(end_row, end_col)])
-                            promote_if_needed(piece)
-                        else:
-                            break
-                    else:
-                        break
             player_turn = True
             selected_piece = None
             valid_moves = []
