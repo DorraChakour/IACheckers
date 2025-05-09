@@ -7,8 +7,8 @@ from constants import WHITE, BLACK
 
 class GameManager:
     def __init__(self):
-        self.nb_games = 3
-        self.max_turns = 300
+        self.nb_games = 10
+        self.max_turns = 1000
         self.scores = {'minimax': 0, 'naif': 0, 'draw': 0}
 
     def run(self):
@@ -21,7 +21,7 @@ class GameManager:
             else:
                 minimax_color = WHITE
                 naif_color = BLACK
-            minimax = Minimax(minimax_color, 3)
+            minimax = Minimax(minimax_color, 4)
             naif = Naif(naif_color)
             turn_color = BLACK  # Noir commence toujours
             turn_count = 0
@@ -50,7 +50,7 @@ class GameManager:
             # Détermination du résultat
             if winner is None:
                 self.scores['draw'] += 1
-                print(f"Partie {game+1}: Match nul (300 coups atteints)")
+                print(f"Partie {game+1}: Match nul ({self.max_turns} coups atteints)")
             elif winner == minimax_color:
                 self.scores['minimax'] += 1
                 print(f"Partie {game+1}: Victoire Minimax")
@@ -58,7 +58,7 @@ class GameManager:
                 self.scores['naif'] += 1
                 print(f"Partie {game+1}: Victoire IA naïve")
         # Affichage du score final
-        print("\nRésultat final après 3 parties :")
+        print(f"\nRésultat final après {self.nb_games} parties :")
         print(f"Minimax : {self.scores['minimax']} victoires")
         print(f"IA naïve : {self.scores['naif']} victoires")
         print(f"Matchs nuls : {self.scores['draw']}")
