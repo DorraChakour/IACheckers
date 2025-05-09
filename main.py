@@ -9,6 +9,7 @@ if choix == '2':
 else:
     from ia.naif import Naif
     from ia.minimax import Minimax
+    from ia.minimax_alpha_beta import MinimaxAlphaBeta
     from board import Board
     from constants import BLACK, WHITE, SQUARE_SIZE, WIDTH, HEIGHT
     import pygame
@@ -19,10 +20,14 @@ else:
         print("Choisissez l'IA contre laquelle jouer :")
         print("1. IA naïve")
         print("2. IA Minimax")
-        ia_choice = input("Votre choix (1 ou 2) : ")
+        print("3. IA Minimax Alpha-Beta")
+        ia_choice = input("Votre choix (1, 2 ou 3) : ")
         if ia_choice == '2':
             ia = Minimax(BLACK, 3)
             ia_name = "Minimax"
+        elif ia_choice == '3':
+            ia = MinimaxAlphaBeta(BLACK, 5)
+            ia_name = "Minimax Alpha-Beta"
         else:
             ia = Naif(BLACK)
             ia_name = "naïve"

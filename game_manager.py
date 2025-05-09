@@ -2,14 +2,15 @@ import copy
 import random
 from board import Board
 from ia.minimax import Minimax
+from ia.minimax_alpha_beta import MinimaxAlphaBeta
 from ia.naif import Naif
 from constants import WHITE, BLACK
 
 class GameManager:
     def __init__(self):
         self.nb_games = 10
-        self.max_turns = 1000
-        self.scores = {'minimax': 0, 'naif': 0, 'draw': 0}
+        self.max_turns = 500
+        self.scores = {'minimax': 0, 'minimax_alpha_beta': 0, 'draw': 0}
 
     def run(self):
         for game in range(self.nb_games):
@@ -17,12 +18,12 @@ class GameManager:
             # Alterner les couleurs à chaque partie
             if game % 2 == 0:
                 minimax_color = BLACK
-                naif_color = WHITE
+                alpha_beta_color = WHITE
             else:
                 minimax_color = WHITE
-                naif_color = BLACK
-            minimax = Minimax(minimax_color, 4)
-            naif = Naif(naif_color)
+                alpha_beta_color = BLACK
+            minimax = Minimax(minimax_color, 3)
+            alpha_beta = MinimaxAlphaBeta(alpha_beta_color, 5)
             turn_color = BLACK  # Noir commence toujours
             turn_count = 0
             winner = None
@@ -31,8 +32,7 @@ class GameManager:
                 if turn_color == minimax_color:
                     move = minimax.get_move(board)
                 else:
-                    moves = naif.get_all_valid_moves(board)
-                    move = random.choice(moves) if moves else None
+                    move = alpha_beta.get_move(board)
                 if not move:
                     winner = WHITE if turn_color == BLACK else BLACK
                     break
@@ -55,12 +55,12 @@ class GameManager:
                 self.scores['minimax'] += 1
                 print(f"Partie {game+1}: Victoire Minimax")
             else:
-                self.scores['naif'] += 1
-                print(f"Partie {game+1}: Victoire IA naïve")
+                self.scores['minimax_alpha_beta'] += 1
+                print(f"Partie {game+1}: Victoire Minimax Alpha-Beta")
         # Affichage du score final
         print(f"\nRésultat final après {self.nb_games} parties :")
         print(f"Minimax : {self.scores['minimax']} victoires")
-        print(f"IA naïve : {self.scores['naif']} victoires")
+        print(f"Minimax Alpha-Beta : {self.scores['minimax_alpha_beta']} victoires")
         print(f"Matchs nuls : {self.scores['draw']}")
 
     def apply_move(self, board, move):
