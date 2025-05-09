@@ -158,6 +158,8 @@ class Minimax:
         Chaque séquence est une liste de mouvements [(start_row, start_col, end_row, end_col, captured), ...]
         """
         def explore(board, piece, path, visited):
+            if piece == 0:
+                return []
             captures = []
             directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
             found = False
@@ -177,7 +179,8 @@ class Minimax:
                         new_board.board[jump_row][jump_col] = new_piece
                         new_board.board[piece.row][piece.col] = 0
                         new_board.board[middle_row][middle_col] = 0
-                        new_piece.row, new_piece.col = jump_row, jump_col
+                        if new_piece != 0:
+                            new_piece.row, new_piece.col = jump_row, jump_col
                         new_path = path + [(piece.row, piece.col, jump_row, jump_col, (middle_row, middle_col))]
                         new_visited = visited | {(middle_row, middle_col)}
                         # On continue la rafle

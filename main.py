@@ -38,6 +38,7 @@ else:
         valid_moves = []
         rafle_in_progress = False
         run = True
+        move = None  # Initialisation pour éviter UnboundLocalError
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -116,8 +117,37 @@ else:
                     color = (255, 0, 0) if (len(move) == 5) else (0, 255, 0)
                     pygame.draw.circle(WIN, color, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), 10)
             pygame.display.update()
-            if not move:
-                winner = WHITE if turn_color == BLACK else BLACK
+            # Vérifier la fin de partie pour le joueur humain
+            if player_turn:
+                coups_joueur = []
+                for row in board.board:
+                    for piece in row:
+                        if piece != 0 and piece.color == WHITE:
+                            coups_joueur.extend(get_valid_moves(board, piece))
+                if not coups_joueur:
+                    blancs = sum(1 for row in board.board for p in row if p != 0 and p.color == WHITE)
+                    noirs = sum(1 for row in board.board for p in row if p != 0 and p.color == BLACK)
+                    if blancs == 0 and noirs == 0:
+                        print("Match nul ! Plus aucune pièce sur le plateau.")
+                    elif blancs == 0:
+                        print("Victoire de l'IA !")
+                    elif noirs == 0:
+                        print("Victoire du joueur !")
+                    else:
+                        print("Partie terminée ! Plus de coups possibles pour le joueur.")
+                    break
+            # Vérifier la fin de partie uniquement pour l'IA
+            if not player_turn and not move:
+                blancs = sum(1 for row in board.board for p in row if p != 0 and p.color == WHITE)
+                noirs = sum(1 for row in board.board for p in row if p != 0 and p.color == BLACK)
+                if blancs == 0 and noirs == 0:
+                    print("Match nul ! Plus aucune pièce sur le plateau.")
+                elif blancs == 0:
+                    print("Victoire de l'IA !")
+                elif noirs == 0:
+                    print("Victoire du joueur !")
+                else:
+                    print("Partie terminée ! Plus de coups possibles pour l'IA.")
                 break
         pygame.quit()
 
