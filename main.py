@@ -26,7 +26,7 @@ else:
             ia = Minimax(BLACK, 3)
             ia_name = "Minimax"
         elif ia_choice == '3':
-            ia = MinimaxAlphaBeta(BLACK, 5)
+            ia = MinimaxAlphaBeta(BLACK, 4)
             ia_name = "Minimax Alpha-Beta"
         else:
             ia = Naif(BLACK)
@@ -44,6 +44,7 @@ else:
         rafle_in_progress = False
         run = True
         move = None  # Initialisation pour éviter UnboundLocalError
+        turn_count = 0
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -61,28 +62,30 @@ else:
                                     start_row, start_col, end_row, end_col = move
                                     captured = None
                                 piece = board.board[start_row][start_col]
-                                board.board[end_row][end_col] = piece
-                                board.board[start_row][start_col] = 0
-                                if captured:
-                                    if isinstance(captured, tuple):
-                                        board.board[captured[0]][captured[1]] = 0
-                                piece.move(end_row, end_col)
-                                if piece.color == WHITE and end_row == 9:
-                                    piece.king = True
-                                elif piece.color == BLACK and end_row == 0:
-                                    piece.king = True
-                                next_captures = get_valid_moves(board, piece, only_captures=True)
-                                if captured and next_captures:
-                                    selected_piece = piece
-                                    valid_moves = next_captures
-                                    rafle_in_progress = True
-                                    break
-                                else:
-                                    player_turn = False
-                                    selected_piece = None
-                                    valid_moves = []
-                                    rafle_in_progress = False
-                                    break
+                                if piece and piece != 0:
+                                    if hasattr(piece, 'move'):
+                                        piece.move(end_row, end_col)
+                                    board.board[end_row][end_col] = piece
+                                    board.board[start_row][start_col] = 0
+                                    if captured:
+                                        if isinstance(captured, tuple):
+                                            board.board[captured[0]][captured[1]] = 0
+                                    if piece.color == WHITE and end_row == 9:
+                                        piece.king = True
+                                    elif piece.color == BLACK and end_row == 0:
+                                        piece.king = True
+                                    next_captures = get_valid_moves(board, piece, only_captures=True)
+                                    if captured and next_captures:
+                                        selected_piece = piece
+                                        valid_moves = next_captures
+                                        rafle_in_progress = True
+                                        break
+                                    else:
+                                        player_turn = False
+                                        selected_piece = None
+                                        valid_moves = []
+                                        rafle_in_progress = False
+                                        break
                         else:
                             if not rafle_in_progress:
                                 selected_piece = None
@@ -101,20 +104,28 @@ else:
                         start_row, start_col, end_row, end_col = move
                         captured = None
                     piece = board.board[start_row][start_col]
-                    board.board[end_row][end_col] = piece
-                    board.board[start_row][start_col] = 0
-                    if captured:
-                        if isinstance(captured, tuple):
-                            board.board[captured[0]][captured[1]] = 0
-                    piece.move(end_row, end_col)
-                    if piece.color == WHITE and end_row == 9:
-                        piece.king = True
-                    elif piece.color == BLACK and end_row == 0:
-                        piece.king = True
-                player_turn = True
-                selected_piece = None
-                valid_moves = []
-                rafle_in_progress = False
+                    if piece and piece != 0:
+                        if hasattr(piece, 'move'):
+                            piece.move(end_row, end_col)
+                        board.board[end_row][end_col] = piece
+                        board.board[start_row][start_col] = 0
+                        if captured:
+                            if isinstance(captured, tuple):
+                                board.board[captured[0]][captured[1]] = 0
+                        if piece.color == WHITE and end_row == 9:
+                            piece.king = True
+                        elif piece.color == BLACK and end_row == 0:
+                            piece.king = True
+                    player_turn = True
+                    selected_piece = None
+                    valid_moves = []
+                    rafle_in_progress = False
+                else:
+                    player_turn = True
+                    selected_piece = None
+                    valid_moves = []
+                    rafle_in_progress = False
+            print(f"Tour {turn_count} - {ia.__class__.__name__} joue : {move}")
             board.draw(WIN)
             if selected_piece:
                 for move in valid_moves:
@@ -154,6 +165,7 @@ else:
                 else:
                     print("Partie terminée ! Plus de coups possibles pour l'IA.")
                 break
+            turn_count += 1
         pygame.quit()
 
     def get_valid_moves(board, piece, only_captures=False):

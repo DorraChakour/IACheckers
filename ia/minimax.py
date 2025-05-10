@@ -1,4 +1,5 @@
 import copy
+import time
 from constants import WHITE, BLACK
 from ia.naif import Naif
 
@@ -18,7 +19,10 @@ class Minimax:
         """
         Retourne le meilleur mouvement selon l'algorithme Minimax
         """
-        _, move = self.minimax(board, self.depth, True)
+        start = time.time()
+        score, move = self.minimax(board, self.depth, True)
+        end = time.time()
+        print(f"[Minimax] Temps de calcul du coup : {round(end - start, 3)}s, score évalué : {score}")
         return move
 
     def minimax(self, board, depth, maximizing_player):
@@ -61,47 +65,50 @@ class Minimax:
                     best_move = move
             return min_eval, best_move
 
-    def evaluate(self, board):
-        """
-        Fonction d'évaluation avancée et offensive du plateau
-        """
+    def evaluate(self, board, depth=None, max_depth=None):
+        # Pour compatibilité avec MinimaxAlphaBeta, on accepte depth et max_depth mais on ne les utilise que pour la victoire/défaite
+        if self.is_game_over(board):
+            blancs = sum(1 for row in board.board for p in row if p and p.color == WHITE)
+            noirs = sum(1 for row in board.board for p in row if p and p.color == BLACK)
+            if blancs == 0 and noirs == 0:
+                return 0
+            ia_wins = (noirs == 0 and self.color == WHITE) or (blancs == 0 and self.color == BLACK)
+            # Si pas de profondeur, on met 0
+            score = 10000 - (max_depth - depth) if depth is not None and max_depth is not None else 10000
+            return score if ia_wins else -score
+
         value = 0
-        mobility = 0
-        for row_idx, row in enumerate(board.board):
-            for col_idx, piece in enumerate(row):
+        mobility_bonus = 0
+
+        for row in board.board:
+            for piece in row:
                 if piece != 0:
+                    base = self.KING_VAL if piece.king else self.PIECE_VAL
+                    bonus = 0
+
+                    # Bonus d'avancement
+                    if not piece.king:
+                        bonus += piece.row if piece.color == BLACK else (9 - piece.row)
+
+                    # Bonus pour pièces menacées ou capables de capturer
+                    if self.can_capture(board, piece):
+                        bonus += 15
+                    if self.is_threatened(board, piece):
+                        bonus -= 7
+
+                    # Bonus bord
+                    if piece.col in (0, 9):
+                        bonus += 2
+
+                    # Mobilité
+                    mobility_bonus += len(self.naif.get_piece_moves(board, piece))
+
                     if piece.color == self.color:
-                        value += self.KING_VAL if piece.king else self.PIECE_VAL
-                        # Bonus d'avancement
-                        if not piece.king:
-                            value += (row_idx if self.color == BLACK else (9 - row_idx))
-                            # Bonus pour pion proche de la promotion
-                            if (self.color == BLACK and row_idx >= 7) or (self.color == WHITE and row_idx <= 2):
-                                value += 10
-                        # Bonus pour pièce sur le bord
-                        if col_idx == 0 or col_idx == 9:
-                            value += 2
-                        # Mobilité
-                        mobility += len(self.naif.get_piece_moves(board, piece))
-                        # Menace : malus si la pièce peut être capturée
-                        if self.is_threatened(board, piece):
-                            value -= 7
-                        # Bonus si la pièce peut capturer
-                        if self.can_capture(board, piece):
-                            value += 15
+                        value += base + bonus
                     else:
-                        value -= self.KING_VAL if piece.king else self.PIECE_VAL
-                        if not piece.king:
-                            value -= (row_idx if piece.color == BLACK else (9 - row_idx))
-                            if (piece.color == BLACK and row_idx >= 7) or (piece.color == WHITE and row_idx <= 2):
-                                value -= 10
-                        if col_idx == 0 or col_idx == 9:
-                            value -= 2
-                        if self.is_threatened(board, piece):
-                            value += 7
-                        if self.can_capture(board, piece):
-                            value -= 15
-        value += mobility
+                        value -= base + bonus
+
+        value += mobility_bonus * 0.5
         return value
 
     def is_threatened(self, board, piece):
@@ -133,13 +140,14 @@ class Minimax:
         return white_left == 0 or black_left == 0
 
     def apply_move(self, board, move):
-        # Applique un mouvement sur une copie du plateau
         if len(move) == 5:
             start_row, start_col, end_row, end_col, captured = move
         else:
             start_row, start_col, end_row, end_col = move
             captured = None
         piece = board.board[start_row][start_col]
+        if piece and piece != 0:
+            piece.move(end_row, end_col)
         board.board[end_row][end_col] = piece
         board.board[start_row][start_col] = 0
         if captured:

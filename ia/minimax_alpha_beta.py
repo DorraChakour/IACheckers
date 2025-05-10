@@ -20,6 +20,7 @@ class MinimaxAlphaBeta:
         Retourne le meilleur mouvement selon l'algorithme Minimax avec élagage alpha-beta
         À implémenter
         """
+        print("Évaluation initiale :", self.evaluate(board, self.depth, self.depth))
         start = time.time()
         score, move = self.minimax_alpha_beta(board, self.depth, float('-inf'), float('inf'), True, self.depth)
         end = time.time()
@@ -37,7 +38,7 @@ class MinimaxAlphaBeta:
         color = self.color if maximizing_player else (WHITE if self.color == BLACK else BLACK)
         naif = Naif(color)
         if maximizing_player:
-            moves = self.get_all_valid_moves_with_rafle(board)
+            moves = self.get_all_valid_moves_with_rafle(board, color)
         else:
             moves = naif.get_all_valid_moves(board)
         if not moves:
@@ -73,29 +74,47 @@ class MinimaxAlphaBeta:
             return min_eval, best_move
 
     def evaluate(self, board, depth, max_depth):
-        """
-        Fonction d'évaluation du plateau
-        À implémenter
-        """
-        # Bonus/malus selon la profondeur pour favoriser la victoire rapide
         if self.is_game_over(board):
-            blancs = sum(1 for row in board.board for p in row if p != 0 and p.color == WHITE)
-            noirs = sum(1 for row in board.board for p in row if p != 0 and p.color == BLACK)
+            blancs = sum(1 for row in board.board for p in row if p and p.color == WHITE)
+            noirs = sum(1 for row in board.board for p in row if p and p.color == BLACK)
             if blancs == 0 and noirs == 0:
-                return 0  # Match nul
-            elif blancs == 0:
-                return 10000 - (max_depth - depth)  # Victoire IA
-            elif noirs == 0:
-                return -10000 + (max_depth - depth)  # Défaite IA
-        # Évaluation simple et rapide
+                return 0
+            ia_wins = (noirs == 0 and self.color == WHITE) or (blancs == 0 and self.color == BLACK)
+            score = 10000 - (max_depth - depth)
+            return score if ia_wins else -score
+
         value = 0
+        mobility_bonus = 0
+
         for row in board.board:
             for piece in row:
                 if piece != 0:
+                    base = self.KING_VAL if piece.king else self.PIECE_VAL
+                    bonus = 0
+
+                    # Bonus d'avancement
+                    if not piece.king:
+                        bonus += piece.row if piece.color == BLACK else (9 - piece.row)
+
+                    # Bonus pour pièces menacées ou capables de capturer
+                    if self.can_capture(board, piece):
+                        bonus += 15
+                    if self.is_threatened(board, piece):
+                        bonus -= 7
+
+                    # Bonus bord
+                    if piece.col in (0, 9):
+                        bonus += 2
+
+                    # Mobilité
+                    mobility_bonus += len(self.naif.get_piece_moves(board, piece))
+
                     if piece.color == self.color:
-                        value += self.KING_VAL if piece.king else self.PIECE_VAL
+                        value += base + bonus
                     else:
-                        value -= self.KING_VAL if piece.king else self.PIECE_VAL
+                        value -= base + bonus
+
+        value += mobility_bonus * 0.5
         return value
 
     def is_threatened(self, board, piece):
@@ -132,6 +151,8 @@ class MinimaxAlphaBeta:
             start_row, start_col, end_row, end_col = move
             captured = None
         piece = board.board[start_row][start_col]
+        if piece and piece != 0:
+            piece.move(end_row, end_col)
         board.board[end_row][end_col] = piece
         board.board[start_row][start_col] = 0
         if captured:
@@ -181,13 +202,19 @@ class MinimaxAlphaBeta:
             return captures
         return explore(board, piece, [], set())
 
-    def get_all_valid_moves_with_rafle(self, board):
+    def get_all_valid_moves_with_rafle(self, board, color=None):
+        """
+        Retourne tous les mouvements valides possibles pour la couleur spécifiée, en priorisant les rafles.
+        """
+        if color is None:
+            color = self.color
+            
         valid_moves = []
         chain_captures = []
         for row in range(len(board.board)):
             for col in range(len(board.board[row])):
                 piece = board.board[row][col]
-                if piece != 0 and piece.color == self.color:
+                if piece != 0 and piece.color == color:
                     rafles = self.get_chain_captures(board, piece)
                     for rafle in rafles:
                         if len(rafle) > 0:
@@ -197,7 +224,7 @@ class MinimaxAlphaBeta:
         for row in range(len(board.board)):
             for col in range(len(board.board[row])):
                 piece = board.board[row][col]
-                if piece != 0 and piece.color == self.color:
+                if piece != 0 and piece.color == color:
                     moves = self.naif.get_piece_moves(board, piece)
                     valid_moves.extend([m for m in moves if len(m) == 4])
         return valid_moves
