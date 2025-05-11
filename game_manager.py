@@ -2,9 +2,8 @@ import copy
 import random
 from board import Board
 from ia.minimax_complexe import Minimax
-from ia.minimax_alpha_beta_complexe_heuristique import MinimaxAlphaBeta
 from ia.naif import Naif
-from normal_alphabeta_minimax import MinimaxAlphaBetaSansHeuristique
+from ia.alphabetaTest import MinimaxAlphaBetaTest
 from constants import WHITE, BLACK
 
 class GameManager:
@@ -16,27 +15,19 @@ class GameManager:
     def choose_players(self):
         print("\nChoisissez les joueurs pour le combat :")
         print("1. Naif vs Minimax")
-        print("2. Minimax vs MinimaxAlphaBeta (avec heuristique)")
-        print("3. MinimaxAlphaBeta (avec heuristique) vs Naif")
-        print("4. MinimaxAlphaBeta (sans heuristique) vs MinimaxAlphaBeta (avec heuristique)")
-        print("5. MinimaxAlphaBeta (sans heuristique) vs Minimax")
-        print("6. MinimaxAlphaBeta (sans heuristique) vs Naif")
-        choice = input("Votre choix (1 à 6) : ")
+        print("2. MinimaxAlphaBetaTest vs Naif")
+        print("3. Minimax vs MinimaxAlphaBetaTest")
+        
+        choice = input("Votre choix (1 à 3) : ")
         if choice == '1':
             return (Naif, Minimax)
         elif choice == '2':
-            return (Minimax, MinimaxAlphaBeta)
+            return (MinimaxAlphaBetaTest, Naif)
         elif choice == '3':
-            return (MinimaxAlphaBeta, Naif)
-        elif choice == '4':
-            return (MinimaxAlphaBetaSansHeuristique, MinimaxAlphaBeta)
-        elif choice == '5':
-            return (MinimaxAlphaBetaSansHeuristique, Minimax)
-        elif choice == '6':
-            return (MinimaxAlphaBetaSansHeuristique, Naif)
+            return (Minimax, MinimaxAlphaBetaTest)
         else:
             print("Choix invalide, utilisation par défaut : Minimax vs MinimaxAlphaBeta")
-            return (Minimax, MinimaxAlphaBeta)
+            return (Minimax, MinimaxAlphaBetaTest)
 
     def run(self):
         player1_class, player2_class = self.choose_players()
@@ -54,8 +45,8 @@ class GameManager:
                 player2_color = BLACK
                 
             # Initialisation des joueurs avec la même profondeur
-            depth1 = 4 if player1_class == MinimaxAlphaBeta else 4
-            depth2 = 4 if player2_class == MinimaxAlphaBeta else 4
+            depth1 = 4 if player1_class == MinimaxAlphaBetaTest else 4
+            depth2 = 4 if player2_class == MinimaxAlphaBetaTest else 4
             
             if player1_class == Naif:
                 player1 = player1_class(player1_color)

@@ -1,0 +1,15 @@
+Duel : Naif vs Minimax
+Naif : 0 victoires
+Minimax : 49 victoires
+Matchs nuls : 1
+----------------------------------------
+Duel : Naif vs MinimaxAlphaBeta (nouvelle version)
+Naif : 0 victoires
+MinimaxAlphaBeta (nouvelle version) : 49 victoires
+Matchs nuls : 1
+----------------------------------------
+Duel : Minimax vs MinimaxAlphaBeta (nouvelle version)
+Minimax : 0 victoires
+MinimaxAlphaBeta (nouvelle version) : 50 victoires
+Matchs nuls : 0
+----------------------------------------

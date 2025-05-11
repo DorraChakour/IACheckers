@@ -156,8 +156,7 @@ elif choix == '3':
 else:
     from ia.naif import Naif
     from ia.minimax_complexe import Minimax
-    from ia.minimax_alpha_beta_complexe_heuristique import MinimaxAlphaBeta
-    from normal_alphabeta_minimax import MinimaxAlphaBetaSansHeuristique
+    from ia.alphabetaTest import MinimaxAlphaBetaTest
     from board import Board
     from constants import BLACK, WHITE, SQUARE_SIZE, WIDTH, HEIGHT
     import pygame
@@ -168,18 +167,14 @@ else:
         print("Choisissez l'IA contre laquelle jouer :")
         print("1. IA naïve")
         print("2. IA Minimax")
-        print("3. IA Minimax Alpha-Beta (avec heuristique)")
-        print("4. IA Minimax Alpha-Beta (sans heuristique)")
-        ia_choice = input("Votre choix (1, 2, 3 ou 4) : ")
+        print("3. IA Minimax-Alpha-Beta")
+        ia_choice = input("Votre choix (1, 2 ou 3) : ")
         if ia_choice == '2':
             ia = Minimax(BLACK, 3)
             ia_name = "Minimax"
         elif ia_choice == '3':
-            ia = MinimaxAlphaBeta(BLACK, 4)
-            ia_name = "Minimax Alpha-Beta (avec heuristique)"
-        elif ia_choice == '4':
-            ia = MinimaxAlphaBetaSansHeuristique(BLACK, 4)
-            ia_name = "Minimax Alpha-Beta (sans heuristique)"
+            ia = MinimaxAlphaBetaTest(BLACK, 4)
+            ia_name = "Minimax-Alpha-Beta"
         else:
             ia = Naif(BLACK)
             ia_name = "naïve"
@@ -284,7 +279,7 @@ else:
                     color = (255, 0, 0) if (len(move) == 5) else (0, 255, 0)
                     pygame.draw.circle(WIN, color, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), 10)
             pygame.display.update()
-            # Vérifier la fin de partie pour le joueur humain
+            # Vérifie la fin de partie pour moi
             if player_turn:
                 coups_joueur = []
                 for row in board.board:
@@ -303,7 +298,7 @@ else:
                     else:
                         print("Partie terminée ! Plus de coups possibles pour le joueur.")
                     break
-            # Vérifier la fin de partie uniquement pour l'IA
+            # Vérifie la fin de partie uniquement pour l'IA
             if not player_turn and not move:
                 blancs = sum(1 for row in board.board for p in row if p != 0 and p.color == WHITE)
                 noirs = sum(1 for row in board.board for p in row if p != 0 and p.color == BLACK)

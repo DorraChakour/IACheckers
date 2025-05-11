@@ -1,9 +1,0 @@
-Score après la partie 1:
-IA1 : 1 victoires
-IA2 : 0 victoires
-Matchs nuls : 0
-
-Résultat final après 1 partie :
-IA1 : 1 victoires
-IA2 : 0 victoires
-Matchs nuls : 0

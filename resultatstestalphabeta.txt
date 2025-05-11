@@ -1,0 +1,5 @@
+Duel : Naif vs Minimax
+Naif : 0 victoires
+Minimax : 5 victoires
+Matchs nuls : 0
+----------------------------------------

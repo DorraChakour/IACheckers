@@ -1,0 +1,10 @@
+Duel : Minimax vs MinimaxAlphaBeta (sans heuristique)
+Minimax : 25 victoires
+MinimaxAlphaBeta (sans heuristique) : 0 victoires
+Matchs nuls : 25
+----------------------------------------
+Duel : MinimaxAlphaBeta (sans heuristique) vs MinimaxAlphaBeta (avec heuristique)
+MinimaxAlphaBeta (sans heuristique) : 0 victoires
+MinimaxAlphaBeta (avec heuristique) : 0 victoires
+Matchs nuls : 50
+----------------------------------------

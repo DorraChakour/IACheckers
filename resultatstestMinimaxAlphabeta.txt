@@ -1,0 +1,5 @@
+Duel : Minimax vs MinimaxAlphaBeta (nouvelle version)
+Minimax : 0 victoires
+MinimaxAlphaBeta (nouvelle version) : 50 victoires
+Matchs nuls : 0
+----------------------------------------
