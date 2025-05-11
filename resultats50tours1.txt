@@ -1,0 +1,15 @@
+Duel : Naif vs Minimax
+Naif : 0 victoires
+Minimax : 48 victoires
+Matchs nuls : 2
+----------------------------------------
+Duel : Naif vs MinimaxAlphaBeta (sans heuristique)
+Naif : 0 victoires
+MinimaxAlphaBeta (sans heuristique) : 48 victoires
+Matchs nuls : 2
+----------------------------------------
+Duel : Naif vs MinimaxAlphaBeta (avec heuristique)
+Naif : 0 victoires
+MinimaxAlphaBeta (avec heuristique) : 50 victoires
+Matchs nuls : 0
+----------------------------------------

@@ -3,7 +3,7 @@ import time
 from constants import WHITE, BLACK
 from ia.naif import Naif
 
-class MinimaxAlphaBeta:
+class MinimaxAlphaBetaSansHeuristique:
     PIECE_VAL = 10
     KING_VAL = 50
 
@@ -20,11 +20,9 @@ class MinimaxAlphaBeta:
         Retourne le meilleur mouvement selon l'algorithme Minimax avec élagage alpha-beta
         À implémenter
         """
-        print("Évaluation initiale :", self.evaluate(board, self.depth, self.depth))
         start = time.time()
         score, move = self.minimax_alpha_beta(board, self.depth, float('-inf'), float('inf'), True, self.depth)
         end = time.time()
-        print(f"[AlphaBeta] Temps de calcul du coup : {round(end - start, 3)}s, score évalué : {score}")
         return move
 
     def minimax_alpha_beta(self, board, depth, alpha, beta, maximizing_player, max_depth):

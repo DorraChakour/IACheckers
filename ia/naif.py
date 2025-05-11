@@ -1,6 +1,6 @@
 import random
 from board import Board
-from constants import WHITE
+from constants import WHITE, BLACK
 
 class Naif:
     def __init__(self, color):
@@ -96,3 +96,35 @@ class Naif:
                                 board.board[middle_row][middle_col].color != piece.color):
                                 captures.append((piece.row, piece.col, jump_row, jump_col, (middle_row, middle_col)))
         return moves + captures  # Retourne tous les mouvements possibles 
+
+    def is_game_over(self, board):
+        white_left = black_left = 0
+        for row in board.board:
+            for piece in row:
+                if piece != 0:
+                    if piece.color == WHITE:
+                        white_left += 1
+                    elif piece.color == BLACK:
+                        black_left += 1
+        return white_left == 0 or black_left == 0 
+
+    def apply_move(self, board, move):
+        if len(move) == 5:
+            start_row, start_col, end_row, end_col, captured = move
+        else:
+            start_row, start_col, end_row, end_col = move
+            captured = None
+        piece = board.board[start_row][start_col]
+        if piece and piece != 0:
+            piece.move(end_row, end_col)
+        board.board[end_row][end_col] = piece
+        board.board[start_row][start_col] = 0
+        if captured:
+            if isinstance(captured, tuple):
+                board.board[captured[0]][captured[1]] = 0
+        # Promotion éventuelle
+        if piece and piece != 0:
+            if piece.color == WHITE and end_row == 9:
+                piece.king = True
+            elif piece.color == BLACK and end_row == 0:
+                piece.king = True 

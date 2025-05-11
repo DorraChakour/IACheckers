@@ -1,30 +1,39 @@
 import copy
 import random
 from board import Board
-from ia.minimax import Minimax
-from ia.minimax_alpha_beta import MinimaxAlphaBeta
+from ia.minimax_complexe import Minimax
+from ia.minimax_alpha_beta_complexe_heuristique import MinimaxAlphaBeta
 from ia.naif import Naif
+from normal_alphabeta_minimax import MinimaxAlphaBetaSansHeuristique
 from constants import WHITE, BLACK
 
 class GameManager:
     def __init__(self):
-        self.nb_games = 10
-        self.max_turns = 500
+        self.nb_games = 3
+        self.max_turns = 300
         self.scores = {'player1': 0, 'player2': 0, 'draw': 0}
 
     def choose_players(self):
         print("\nChoisissez les joueurs pour le combat :")
         print("1. Naif vs Minimax")
-        print("2. Minimax vs MinimaxAlphaBeta")
-        print("3. MinimaxAlphaBeta vs Naif")
-        choice = input("Votre choix (1, 2 ou 3) : ")
-        
+        print("2. Minimax vs MinimaxAlphaBeta (avec heuristique)")
+        print("3. MinimaxAlphaBeta (avec heuristique) vs Naif")
+        print("4. MinimaxAlphaBeta (sans heuristique) vs MinimaxAlphaBeta (avec heuristique)")
+        print("5. MinimaxAlphaBeta (sans heuristique) vs Minimax")
+        print("6. MinimaxAlphaBeta (sans heuristique) vs Naif")
+        choice = input("Votre choix (1 à 6) : ")
         if choice == '1':
             return (Naif, Minimax)
         elif choice == '2':
             return (Minimax, MinimaxAlphaBeta)
         elif choice == '3':
             return (MinimaxAlphaBeta, Naif)
+        elif choice == '4':
+            return (MinimaxAlphaBetaSansHeuristique, MinimaxAlphaBeta)
+        elif choice == '5':
+            return (MinimaxAlphaBetaSansHeuristique, Minimax)
+        elif choice == '6':
+            return (MinimaxAlphaBetaSansHeuristique, Naif)
         else:
             print("Choix invalide, utilisation par défaut : Minimax vs MinimaxAlphaBeta")
             return (Minimax, MinimaxAlphaBeta)
@@ -68,7 +77,7 @@ class GameManager:
                 turn_count += 1
                 current_player = player1 if turn_color == player1_color else player2
                 move = current_player.get_move(board)
-                print(f"Tour {turn_count} - {current_player.__class__.__name__} joue : {move}")
+                # print(f"Tour {turn_count} - {current_player.__class__.__name__} joue : {move}")
                 if not move:
                     winner = WHITE if turn_color == BLACK else BLACK
                     print(f"Plus de mouvements possibles pour {'Noir' if turn_color == BLACK else 'Blanc'}")

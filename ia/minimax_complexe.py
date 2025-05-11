@@ -22,7 +22,6 @@ class Minimax:
         start = time.time()
         score, move = self.minimax(board, self.depth, True)
         end = time.time()
-        print(f"[Minimax] Temps de calcul du coup : {round(end - start, 3)}s, score évalué : {score}")
         return move
 
     def minimax(self, board, depth, maximizing_player):
